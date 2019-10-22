@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/createMI"
+        android:orderInCategory="1"
+        android:title="Create"/>
+
+    <item
+        android:id="@+id/sortByDateMI"
+        android:orderInCategory="2"
+        android:checkable="true"
+        android:title="Sort by date"/>
+
+    <item
+        android:id="@+id/deleteDone"
+        android:orderInCategory="3"
+        android:title="Delete all done"/>
+
+    <item
+        android:id="@+id/exitMI"
+        android:orderInCategory="4"
+        android:title="Exit"/>
+</menu>
