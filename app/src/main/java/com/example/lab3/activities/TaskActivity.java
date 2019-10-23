@@ -1,7 +1,6 @@
 package com.example.lab3.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,9 +9,10 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.lab3.R;
+import com.example.lab3.Task;
 import com.example.lab3.fragments.DetailsFragment;
 
-public class TaskActivity extends AppCompatActivity {
+public class TaskActivity extends AppCompatActivity implements DetailsFragment.OnDataPass {
 
     private boolean creating;
     private boolean done;
@@ -21,9 +21,6 @@ public class TaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
-
-        DetailsFragment fragment = (DetailsFragment)getSupportFragmentManager().findFragmentById(R.id.detailsFragment);
-        fragment.setArguments(getIntent().getExtras());
 
         creating = getIntent().getBooleanExtra("creating", false);
         done = getIntent().getBooleanExtra("done", false);
@@ -60,5 +57,10 @@ public class TaskActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle state) {
         //
         super.onSaveInstanceState(state);
+    }
+
+    @Override
+    public void onDataPass(Task task) {
+
     }
 }

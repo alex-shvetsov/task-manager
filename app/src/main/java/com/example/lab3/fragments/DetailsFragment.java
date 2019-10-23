@@ -1,32 +1,130 @@
 package com.example.lab3.fragments;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.lab3.R;
+import com.example.lab3.Task;
+
+import java.util.Calendar;
 
 public class DetailsFragment extends Fragment {
+
+    private interface Saver {
+        void save();
+    }
+
+    public interface OnDataPass {
+        void onDataPass(Task task);
+    }
+
+    private OnDataPass dataPasser;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        dataPasser = (OnDataPass) context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
 
-        EditText nameET = (EditText)view.findViewById(R.id.nameText);
+        final EditText nameET = (EditText)view.findViewById(R.id.nameText);
         EditText commentET = (EditText)view.findViewById(R.id.commentText);
-        TextView dateTV = (TextView)view.findViewById(R.id.dateText);
-        CheckBox doneCB = (CheckBox)view.findViewById(R.id.doneCheckBox);
+        final TextView dateTV = (TextView)view.findViewById(R.id.dateText);
+        final CheckBox doneCB = (CheckBox)view.findViewById(R.id.doneCheckBox);
+        Button saveButton = (Button)view.findViewById(R.id.saveButton);
+        Button pickButton = (Button)view.findViewById(R.id.pickButton);
 
-        nameET.setText(getArguments().getString("name"));
-        commentET.setText(getArguments().getString("comment"));
-        dateTV.setText(getArguments().getString("date"));
-        doneCB.setChecked(getArguments().getBoolean("done"));
+        nameET.setText(getActivity().getIntent().getStringExtra("name"));
+        commentET.setText(getActivity().getIntent().getStringExtra("comment"));
+        dateTV.setText(getActivity().getIntent().getStringExtra("date"));
+        doneCB.setChecked(getActivity().getIntent().getBooleanExtra("done", false));
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
+
+                if (nameET.getText().toString().matches("") ||
+                    dateTV.getText().toString().matches("")) {
+                    adb.setTitle("Empty fields");
+                    adb.setMessage("Fill 'name' and 'date' fields.");
+                    adb.setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    adb.show();
+                    return;
+                }
+
+                final Saver saver = () -> {
+                    Task task = new Task(
+                            nameET.getText().toString(),
+                            commentET.getText().toString(),
+                            dateTV.getText().toString(),
+                            doneCB.isChecked()
+                    );
+
+                    dataPasser.onDataPass(task);
+                };
+
+                if (doneCB.isChecked() &&
+                    !getActivity().getIntent().getBooleanExtra("done", false)) {
+                    adb.setTitle("Is it actually done?");
+                    adb.setMessage("Are you sure? You won't be able to edit the task anymore.");
+
+                    adb.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            saver.save();
+                        }
+                    });
+                    adb.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    adb.show();
+                    return;
+                }
+
+                saver.save();
+            }
+        });
+
+        pickButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int month = calendar.get(Calendar.MONTH);
+                int year = calendar.get(Calendar.YEAR);
+                new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        dateTV.setText(year + "/" + month + 1 + "/" + dayOfMonth);
+                    }
+                }, day, month, year).show();
+            }
+        });
 
         return view;
     }
