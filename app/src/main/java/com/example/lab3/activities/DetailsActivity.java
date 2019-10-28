@@ -10,9 +10,8 @@ import android.widget.Button;
 
 import com.example.lab3.R;
 import com.example.lab3.Task;
-import com.example.lab3.fragments.DetailsFragment;
 
-public class TaskActivity extends AppCompatActivity implements DetailsFragment.OnDataPass {
+public class DetailsActivity extends AppCompatActivity {
 
     private boolean creating;
     private boolean done;
@@ -20,10 +19,12 @@ public class TaskActivity extends AppCompatActivity implements DetailsFragment.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task);
+        setContentView(R.layout.activity_details);
 
-        creating = getIntent().getBooleanExtra("creating", false);
-        done = getIntent().getBooleanExtra("done", false);
+        Task task = getIntent().getParcelableExtra("task");
+        this.done = task.isDone();
+
+        this.creating = getIntent().getBooleanExtra("creating", false);
 
         if (done) {
             Button saveButton = (Button)findViewById(R.id.saveButton);
@@ -33,7 +34,7 @@ public class TaskActivity extends AppCompatActivity implements DetailsFragment.O
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.task_menu, menu);
+        getMenuInflater().inflate(R.menu.details_menu, menu);
 
         if (done) {
             MenuItem editItem = (MenuItem)menu.findItem(R.id.editMI);
@@ -57,10 +58,5 @@ public class TaskActivity extends AppCompatActivity implements DetailsFragment.O
     public void onSaveInstanceState(Bundle state) {
         //
         super.onSaveInstanceState(state);
-    }
-
-    @Override
-    public void onDataPass(Task task) {
-
     }
 }

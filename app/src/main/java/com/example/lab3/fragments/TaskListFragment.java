@@ -1,68 +1,68 @@
 package com.example.lab3.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.ListFragment;
 
-import com.example.lab3.Json;
 import com.example.lab3.R;
 import com.example.lab3.Task;
 import com.example.lab3.TaskAdapter;
-import com.example.lab3.activities.TaskActivity;
+import com.example.lab3.TaskList;
+import com.example.lab3.activities.DetailsActivity;
 
-import java.sql.Date;
-import java.util.ArrayList;
+public class TaskListFragment extends ListFragment {
 
-public class TaskListFragment extends Fragment {
+    private Task[] tasks;
+    private TaskAdapter adapter;
 
-    private ArrayList<Task> tasks;
-    private ListView taskList;
-    private static TaskAdapter adapter;
+    public interface OnTaskListPassListener {
+        void passTaskList(TaskList taskList);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_task, container, true);
+        View view = inflater.inflate(R.layout.fragment_task_list, container, false);
+        Bundle bundle = getArguments();
 
-        tasks = Json.parse(null);
-        tasks.add(new Task("A", "2000/12/12", null, false));
-        tasks.add(new Task("B", "2000/12/12", "comment", false));
-
-        adapter = new TaskAdapter(tasks, view.getContext());
-        taskList = (ListView)view.findViewById(R.id.taskListView);
-        taskList.setAdapter(adapter);
-
-        taskList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Task task = (Task)parent.getItemAtPosition(position);
-
-            Intent intent = new Intent(getActivity(), TaskActivity.class);
-            intent.putExtra("name", task.getName());
-            intent.putExtra("comment", task.getComment());
-            intent.putExtra("date", task.getDate().toString());
-            intent.putExtra("done", task.isDone());
-            startActivity(intent);
-            }
-        });
-
-        taskList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                // remove
-                return false;
-            }
-        });
+        if (bundle != null) {
+            this.tasks = (Task[])bundle.getParcelableArray("taskList");
+            this.adapter = new TaskAdapter(tasks, view.getContext());
+        }
 
         return view;
     }
 
-    public static TaskAdapter getAdapter() {
-        return adapter;
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        setListAdapter(adapter);
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                intent.putExtra("task", (Task)parent.getItemAtPosition(position));
+                startActivity(intent);
+            }
+        });
+
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Not Implemeted")
+                        .setMessage("DELETE: no implemetation")
+                        .show();
+                return true;
+            }
+        });
     }
 }

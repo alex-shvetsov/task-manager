@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
 
-    private ArrayList<Task> data;
     private Context context;
     private int lastPosition = -1;
 
@@ -24,9 +23,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         CheckBox chbDone;
     }
 
-    public TaskAdapter(ArrayList<Task> data, Context context) {
-        super(context, R.layout.task_item, data);
-        this.data = data;
+    public TaskAdapter(Task[] data, Context context) {
+        super(context, R.layout.task_list_item, data);
         this.context = context;
     }
 
@@ -39,7 +37,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         if (convertView == null) {
             vHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.task_item, parent, false);
+            convertView = inflater.inflate(R.layout.task_list_item, parent, false);
             vHolder.txtName = (TextView)convertView.findViewById(R.id.name);
             vHolder.txtDate = (TextView)convertView.findViewById(R.id.date);
             vHolder.chbDone = (CheckBox) convertView.findViewById(R.id.done);
@@ -57,17 +55,9 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         lastPosition = position;
 
         vHolder.txtName.setText(task.getName());
-        vHolder.txtDate.setText(task.getDate().toString());
+        vHolder.txtDate.setText(task.getDate());
         vHolder.chbDone.setChecked(task.isDone());
 
         return convertView;
-    }
-
-    public void putTask(Task task) {
-        data.add(task);
-    }
-
-    public void removeTask(Task task) {
-        data.remove(task);
     }
 }

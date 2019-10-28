@@ -23,20 +23,9 @@ import java.util.Calendar;
 
 public class DetailsFragment extends Fragment {
 
-    private interface Saver {
-        void save();
-    }
-
-    public interface OnDataPass {
-        void onDataPass(Task task);
-    }
-
-    private OnDataPass dataPasser;
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        dataPasser = (OnDataPass) context;
     }
 
     @Override
@@ -72,41 +61,31 @@ public class DetailsFragment extends Fragment {
                     });
                     adb.show();
                     return;
-                }
-
-                final Saver saver = () -> {
-                    Task task = new Task(
-                            nameET.getText().toString(),
-                            commentET.getText().toString(),
-                            dateTV.getText().toString(),
-                            doneCB.isChecked()
-                    );
-
-                    dataPasser.onDataPass(task);
-                };
+                } else
 
                 if (doneCB.isChecked() &&
                     !getActivity().getIntent().getBooleanExtra("done", false)) {
-                    adb.setTitle("Is it actually done?");
-                    adb.setMessage("Are you sure? You won't be able to edit the task anymore.");
+                    adb.setMessage("Are you sure?");
 
                     adb.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            saver.save();
+                            // save too json
                         }
                     });
+
                     adb.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
                     });
+
                     adb.show();
                     return;
+                } else {
+                    // save to json
                 }
-
-                saver.save();
             }
         });
 

@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.TaskActivity">
+    tools:context=".activities.TaskListActivity">
 
     <fragment
-        android:id="@+id/detailsFragment"
+        android:id="@+id/listFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.example.lab3.fragments.DetailsFragment"/>
+        android:name="com.example.lab3.fragments.TaskListFragment"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
