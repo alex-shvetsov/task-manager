@@ -17,15 +17,15 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.example.lab3.R;
-import com.example.lab3.Task;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DetailsFragment extends Fragment {
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public interface OnDetailsPassedListener {
+        void passDetails();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class DetailsFragment extends Fragment {
                     adb.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // save too json
+                            // save to json
                         }
                     });
 
@@ -93,15 +93,16 @@ public class DetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                int d = calendar.get(Calendar.DAY_OF_MONTH);
+                int m = calendar.get(Calendar.MONTH);
+                int y = calendar.get(Calendar.YEAR);
                 new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        dateTV.setText(year + "/" + month + 1 + "/" + dayOfMonth);
+                        dateTV.setText(sdf.format(calendar.getTime()));
                     }
-                }, day, month, year).show();
+                }, d, m, y).show();
             }
         });
 

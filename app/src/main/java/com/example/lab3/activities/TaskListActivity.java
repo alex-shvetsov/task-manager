@@ -5,13 +5,16 @@ import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import com.example.lab3.R;
-import com.example.lab3.Task;
-import com.example.lab3.TaskList;
 import com.example.lab3.fragments.TaskListFragment;
+import com.example.lab3.json.Json;
+import com.example.lab3.task.Task;
+import com.example.lab3.task.TaskList;
 
 public class TaskListActivity extends AppCompatActivity
     implements TaskListFragment.OnTaskListPassListener {
@@ -33,16 +36,19 @@ public class TaskListActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_task_list);
 
         this.taskList = new TaskList();
-        taskList.addTask(new Task("A", "A", null, false));
+        this.taskList.add(new Task("A", "A", null, false));
+        Json.save(getBaseContext(), taskList);
+        passTaskList(taskList);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // load from json into taskList
+        taskList = Json.load(getBaseContext());
         passTaskList(taskList);
     }
 
@@ -58,6 +64,7 @@ public class TaskListActivity extends AppCompatActivity
             case R.id.createMI:
                 Intent intent = new Intent(TaskListActivity.this, DetailsActivity.class);
                 intent.putExtra("creating", true);
+                intent.putExtra("taskList", taskList.get());
                 startActivity(intent);
                 return true;
             case R.id.sortByDateMI:
@@ -76,5 +83,9 @@ public class TaskListActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    private void sort(boolean sorted) {
+
     }
 }

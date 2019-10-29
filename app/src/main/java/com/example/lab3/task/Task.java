@@ -1,7 +1,10 @@
-package com.example.lab3;
+package com.example.lab3.task;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class Task implements Parcelable {
 
@@ -9,6 +12,7 @@ public class Task implements Parcelable {
     private String comment;
     private String date;
     private boolean done;
+  //  private Date creationTimestamp;
 
     public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
         public Task createFromParcel(Parcel in) {
@@ -67,4 +71,8 @@ public class Task implements Parcelable {
         comment = in.readString();
         done = in.readByte() != 0;
     }
+
+    //public void setCreated() {
+    //    this.creationTimestamp = Calendar.getInstance().getTime();
+   // }
 }

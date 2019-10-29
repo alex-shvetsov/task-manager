@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.example.lab3.R;
-import com.example.lab3.Task;
+import com.example.lab3.task.Task;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -19,17 +20,20 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_details);
 
         Task task = getIntent().getParcelableExtra("task");
-        this.done = task.isDone();
+        if (task != null) {
+            this.done = task.isDone();
+
+            if (done) {
+                Button saveButton = (Button)findViewById(R.id.saveButton);
+                saveButton.setVisibility(View.INVISIBLE);
+            }
+        }
 
         this.creating = getIntent().getBooleanExtra("creating", false);
-
-        if (done) {
-            Button saveButton = (Button)findViewById(R.id.saveButton);
-            saveButton.setVisibility(View.INVISIBLE);
-        }
     }
 
     @Override
@@ -43,7 +47,9 @@ public class DetailsActivity extends AppCompatActivity {
 
         if (creating) {
             MenuItem deleteItem = (MenuItem)menu.findItem(R.id.deleteMI);
+            MenuItem editItem = (MenuItem)menu.findItem(R.id.editMI);
             deleteItem.setEnabled(false);
+            editItem.setEnabled(false);
         }
 
         return true;
