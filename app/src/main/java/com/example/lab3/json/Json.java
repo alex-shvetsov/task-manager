@@ -20,7 +20,7 @@ public class Json {
     /**
      * Имя приватного файла в контексте.
      */
-    private static final String FILE_NAME = "data.json";
+    private static final String FILE_NAME = "data2.json";
 
     /**
      * Список задач.
@@ -74,6 +74,24 @@ public class Json {
     public static boolean remove(Task task) {
         if (loaded) {
             boolean success = taskList.remove(task);
+            updated = !success && updated;
+            return success;
+        }
+        return false;
+    }
+
+    public static boolean removeIfDone(){
+        if(loaded){
+            boolean success = taskList.removeIfDone();
+            updated = !success && updated;
+            return success;
+        }
+        return false;
+    }
+
+    public static boolean sortByDate(){
+        if(loaded){
+            boolean success = taskList.sortByDate();
             updated = !success && updated;
             return success;
         }

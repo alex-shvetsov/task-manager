@@ -12,6 +12,8 @@ import com.example.lab3.R;
 import com.example.lab3.json.Json;
 import com.example.lab3.task.Task;
 
+import java.util.Date;
+
 public class TaskListActivity extends AppCompatActivity {
 
     @Override
@@ -21,7 +23,8 @@ public class TaskListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_task_list);
 
         Json.init(this);
-        Json.put(new Task("A", "A", null, false));
+        //Json.put(new Task("A", new Date(), null, false));
+        //Json.put(new Task("A", new Date(11111111L), null, true));
         Json.update();
     }
 
@@ -40,10 +43,16 @@ public class TaskListActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.sortByDateMI:
-                //sort
+                Json.sortByDate();
+                Json.update();
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(getIntent());
                 return true;
             case R.id.deleteDone:
                 //remove all done
+                Json.removeIfDone();
+                Json.update();
                 finish();
                 overridePendingTransition(0, 0);
                 startActivity(getIntent());

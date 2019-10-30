@@ -10,9 +10,8 @@ public class Task implements Parcelable {
 
     private String name;
     private String comment;
-    private String date;
+    private Date date;
     private boolean done;
-    private Date creationTimestamp;
 
     public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
         public Task createFromParcel(Parcel in) {
@@ -24,12 +23,12 @@ public class Task implements Parcelable {
         }
     };
 
-    public Task(String name, String date, String comment, boolean done) {
+    public Task(String name, Date date, String comment, boolean done) {
         this.name = name;
         this.date = date;
         this.comment = comment;
         this.done = done;
-        this.creationTimestamp = Calendar.getInstance().getTime();
+
     }
 
     public Task(Parcel in) {
@@ -45,7 +44,7 @@ public class Task implements Parcelable {
         return comment;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
@@ -61,14 +60,14 @@ public class Task implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
-        dest.writeString(date);
+        dest.writeSerializable(date);
         dest.writeString(comment);
         dest.writeByte((byte) (done ? 1 : 0));
     }
 
     public void readFromParcel(Parcel in) {
         name = in.readString();
-        date = in.readString();
+        date = (Date)in.readSerializable();
         comment = in.readString();
         done = in.readByte() != 0;
     }

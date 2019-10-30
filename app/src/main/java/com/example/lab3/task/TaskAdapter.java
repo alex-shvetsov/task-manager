@@ -55,7 +55,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         lastPosition = position;
 
         vHolder.txtName.setText(task.getName());
-        vHolder.txtDate.setText(task.getDate());
+        vHolder.txtDate.setText(task.getDate().toString());
         vHolder.chbDone.setChecked(task.isDone());
 
         return convertView;

@@ -19,6 +19,7 @@ import com.example.lab3.task.Task;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DetailsFragment extends Fragment {
 
@@ -110,7 +111,7 @@ public class DetailsFragment extends Fragment {
         // Заполнение полей
         nameEditText.setText(task.getName());
         commentEditText.setText(task.getComment());
-        dateTextView.setText(task.getDate());
+        dateTextView.setText(task.getDate().toString());
         doneCheckBox.setChecked(task.isDone());
 
         saveButton.setOnClickListener(v -> {
@@ -129,7 +130,7 @@ public class DetailsFragment extends Fragment {
                 adb.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     Json.put(new Task(
                             nameEditText.getText().toString(),
-                            dateTextView.getText().toString(),
+                            new Date(),
                             commentEditText.getText().toString(),
                             doneCheckBox.isChecked()
                     ));
