@@ -1,8 +1,10 @@
-package com.example.lab3.task;
+package com.example.lab3.json;
+
+import com.example.lab3.task.Task;
 
 import java.util.ArrayList;
 
-public class TaskList {
+class TaskList {
     private ArrayList<Task> taskList;
 
     public TaskList() {
@@ -10,7 +12,7 @@ public class TaskList {
     }
 
     public Task[] get() {
-        return taskList.toArray(new Task[0]);
+        return taskList.size() > 0 ? taskList.toArray(new Task[0]) : new Task[0];
     }
 
     public boolean add(Task task) {

@@ -11,19 +11,13 @@ import android.widget.AdapterView;
 import androidx.fragment.app.ListFragment;
 
 import com.example.lab3.R;
+import com.example.lab3.json.Json;
 import com.example.lab3.task.Task;
 import com.example.lab3.task.TaskAdapter;
 import com.example.lab3.activities.DetailsActivity;
-import com.example.lab3.task.TaskList;
 
 public class TaskListFragment extends ListFragment {
 
-    private Task[] tasks;
-    private TaskAdapter adapter;
-
-    public interface OnTaskListPassListener {
-        void passTaskList(TaskList taskList);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -34,17 +28,12 @@ public class TaskListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Bundle bundle = getArguments();
-        this.tasks = (Task[])bundle.getParcelableArray("taskList");
-        this.adapter = new TaskAdapter(tasks, getView().getContext());
-
-        setListAdapter(adapter);
+        setListAdapter(new TaskAdapter(Json.get(), getView().getContext()));
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra("creating", false);
-                intent.putExtra("task", (Task)parent.getItemAtPosition(position));
+                intent.putExtra("taskPosition", position);
                 startActivity(intent);
             }
         });

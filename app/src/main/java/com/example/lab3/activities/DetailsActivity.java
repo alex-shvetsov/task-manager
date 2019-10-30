@@ -10,12 +10,15 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.example.lab3.R;
+import com.example.lab3.fragments.DetailsFragment;
+import com.example.lab3.json.Json;
 import com.example.lab3.task.Task;
 
 public class DetailsActivity extends AppCompatActivity {
 
     private boolean creating;
     private boolean done;
+    private int taskPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,33 +26,42 @@ public class DetailsActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_details);
 
-        Task task = getIntent().getParcelableExtra("task");
+        taskPosition = getIntent().getIntExtra("taskPosition", 0);
+        Task task = Json.get()[taskPosition];
         if (task != null) {
-            this.done = task.isDone();
-
-            if (done) {
+            if (done = task.isDone()) {
                 Button saveButton = (Button)findViewById(R.id.saveButton);
                 saveButton.setVisibility(View.INVISIBLE);
             }
         }
 
-        this.creating = getIntent().getBooleanExtra("creating", false);
+        creating = getIntent().getBooleanExtra("creating", false);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.details_menu, menu);
 
-        if (done) {
-            MenuItem editItem = (MenuItem)menu.findItem(R.id.editMI);
-            editItem.setEnabled(false);
-        }
+        MenuItem editItem = (MenuItem) menu.findItem(R.id.editMI);
+        MenuItem deleteItem = (MenuItem)menu.findItem(R.id.deleteMI);
 
         if (creating) {
-            MenuItem deleteItem = (MenuItem)menu.findItem(R.id.deleteMI);
-            MenuItem editItem = (MenuItem)menu.findItem(R.id.editMI);
-            deleteItem.setEnabled(false);
             editItem.setEnabled(false);
+            deleteItem.setEnabled(false);
+        } else {
+            editItem.setOnMenuItemClickListener(item -> {
+                DetailsFragment detailsFragment = (DetailsFragment)
+                        getSupportFragmentManager().findFragmentById(R.id.detailsFragment);
+                detailsFragment.setMode(DetailsFragment.Mode.CREATE);
+                return true;
+            });
+
+            deleteItem.setOnMenuItemClickListener(item -> {
+                Json.remove(Json.get()[taskPosition]);
+                Json.update();
+                finish();
+                return true;
+            });
         }
 
         return true;
