@@ -10,9 +10,8 @@ import android.view.ViewGroup;
 import androidx.fragment.app.ListFragment;
 
 import com.example.lab3.R;
-import com.example.lab3.interfaces.OnListViewItemSelected;
 import com.example.lab3.data.json.Json;
-import com.example.lab3.TaskAdapter;
+import com.example.lab3.data.TaskAdapter;
 
 public class TaskListFragment extends ListFragment {
 

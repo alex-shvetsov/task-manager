@@ -44,12 +44,16 @@ public class ViewDetailsActivity extends AppCompatActivity {
         MenuItem editItem = (MenuItem) menu.findItem(R.id.editMI);
         MenuItem removeItem = (MenuItem)menu.findItem(R.id.removeMI);
 
-        editItem.setOnMenuItemClickListener(item -> {
-            Intent intent = new Intent(this, DetailsActivity.class);
-            intent.putExtra("position", position);
-            startActivity(intent);
-            return true;
-        });
+        if (!Json.get(position).isDone()) {
+            editItem.setOnMenuItemClickListener(item -> {
+                Intent intent = new Intent(this, DetailsActivity.class);
+                intent.putExtra("position", position);
+                startActivity(intent);
+                return true;
+            });
+        } else {
+            editItem.setEnabled(false);
+        }
 
         removeItem.setOnMenuItemClickListener(item -> {
             Json.remove(Json.get(position));

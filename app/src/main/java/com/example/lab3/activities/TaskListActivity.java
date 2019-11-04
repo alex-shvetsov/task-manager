@@ -10,10 +10,7 @@ import android.view.WindowManager;
 
 import com.example.lab3.R;
 import com.example.lab3.data.json.Json;
-import com.example.lab3.fragments.DetailsFragment;
-import com.example.lab3.fragments.TaskListFragment;
-import com.example.lab3.fragments.ViewDetailsFragment;
-import com.example.lab3.interfaces.OnListViewItemSelected;
+import com.example.lab3.fragments.OnListViewItemSelected;
 
 
 public class TaskListActivity extends AppCompatActivity implements OnListViewItemSelected {

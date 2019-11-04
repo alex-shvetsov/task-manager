@@ -1,4 +1,4 @@
-package com.example.lab3;
+package com.example.lab3.data;
 
 import android.content.Context;
 import android.view.LayoutInflater;
