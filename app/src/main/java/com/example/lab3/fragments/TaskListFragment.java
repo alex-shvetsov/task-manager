@@ -1,23 +1,31 @@
 package com.example.lab3.fragments;
 
 import android.app.AlertDialog;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import androidx.fragment.app.ListFragment;
 
 import com.example.lab3.R;
-import com.example.lab3.json.Json;
-import com.example.lab3.task.Task;
-import com.example.lab3.task.TaskAdapter;
-import com.example.lab3.activities.DetailsActivity;
+import com.example.lab3.interfaces.OnListViewItemSelected;
+import com.example.lab3.data.json.Json;
+import com.example.lab3.TaskAdapter;
 
 public class TaskListFragment extends ListFragment {
 
+    private TaskAdapter adapter;
+    private OnListViewItemSelected callback;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context != null) {
+            this.callback = (OnListViewItemSelected)context;
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -25,28 +33,37 @@ public class TaskListFragment extends ListFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onActivityCreated(Bundle state) {
+        super.onActivityCreated(state);
 
-        setListAdapter(new TaskAdapter(Json.get(), getView().getContext()));
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra("taskPosition", position);
-                startActivity(intent);
-            }
-        });
+        if (getView() != null) {
+            // передаем позицию задачи при выборе элемента
+            getListView().setOnItemClickListener((parent, view, position, id) -> {
+                if (callback != null) {
+                    callback.passItem(position);
+                }
+            });
 
-        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Not Implemeted")
-                        .setMessage("DELETE: no implemetation")
-                        .show();
+            // удаляем задачу при длительном нажатии
+            getListView().setOnItemLongClickListener((parent, view, position, id) -> {
+                AlertDialog.Builder adb = new AlertDialog.Builder(getContext());
+                adb.setMessage("Вы действительно хотите удалить задачу?");
+                adb.setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    Json.remove(Json.get(position));
+                    Json.update();
+                });
+                adb.setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss());
+                adb.show();
                 return true;
-            }
-        });
+            });
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // обновляем список
+        adapter = new TaskAdapter(Json.get(), getView().getContext());
+        setListAdapter(adapter);
     }
 }

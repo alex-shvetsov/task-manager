@@ -1,8 +1,8 @@
-package com.example.lab3.json;
+package com.example.lab3.data.json;
 
 import android.content.Context;
 
-import com.example.lab3.task.Task;
+import com.example.lab3.data.Task;
 import com.google.gson.Gson;
 
 import java.io.FileInputStream;
@@ -11,21 +11,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Json {
-
-    /**
-     * Контекст, содержащий данные файла
-     */
-    private static Context ctx;
-
-    /**
-     * Имя приватного файла в контексте.
-     */
-    private static final String FILE_NAME = "data2.json";
-
-    /**
-     * Список задач.
-     */
-    private static TaskList taskList = new TaskList();
+    private static final String FILENAME = "data.json";
+    private static Context context;
+    private static TaskList taskList;
 
     /**
      * Обновление происходит при вызове метода update, где переменной присваивается true.
@@ -38,26 +26,17 @@ public class Json {
      */
     private static boolean loaded = false;
 
-    /**
-     * Инициализация данных: загрузка данных из JSON.
-     * Вызывается при запуске приложения.
-     * @param context
-     * @return
-     */
+    // Инициализация данных: загрузка JSON
     public static boolean init(Context context) {
         if (!loaded) {
-            ctx = context;
-            return loaded = load();
+            Json.context = context;
+            loaded = load();
         }
         return false;
     }
 
-    /**
-     * Добавляет новую задачу в список задач.
-     * @param task новая задача
-     * @return успешность операции
-     */
-    public static boolean put(Task task) {
+    // Добавить задачу в список
+    public static boolean add(Task task) {
         if (loaded) {
             boolean success = taskList.add(task);
             updated = !success && updated;
@@ -66,11 +45,7 @@ public class Json {
         return false;
     }
 
-    /**
-     * Удаляет задачу из списка задач.
-     * @param task задача
-     * @return успешность выполнения
-     */
+    // Удалить задачу из списка
     public static boolean remove(Task task) {
         if (loaded) {
             boolean success = taskList.remove(task);
@@ -80,6 +55,7 @@ public class Json {
         return false;
     }
 
+    // Удалить выполненные задачи
     public static boolean removeIfDone(){
         if(loaded){
             boolean success = taskList.removeIfDone();
@@ -89,6 +65,7 @@ public class Json {
         return false;
     }
 
+    // Отсортировать по дате
     public static boolean sortByDate(){
         if(loaded){
             boolean success = taskList.sortByDate();
@@ -98,32 +75,33 @@ public class Json {
         return false;
     }
 
-    /**
-     * Сохранение данных в JSON.
-     * @return успешность выполнения
-     */
+    // Инициировать обновление списка
     public static boolean update() {
-        if (loaded && !updated) {
-            return updated = save();
+        if (loaded) {
+            save();
+            return updated = true;
         }
         return false;
     }
 
-    /**
-     * Возвращает массив задач.
-     * @return массив задач; null, если данные не проинициализированы или не обновлены
-     */
+    // Получить список задач в виде массива
     public static Task[] get() {
-        if (loaded && updated) {
+        if (loaded && updated && taskList != null) {
             return taskList.get();
         }
         return null;
     }
 
-    /**
-     * Сохранение данных в JSON (без проверки обновления списка задач).
-     * @return успешность выполнения
-     */
+    // Получить задачу по позиции
+    public static Task get(int position) {
+        Task[] tasks = get();
+        if (tasks != null && tasks.length > position) {
+            return tasks[position];
+        }
+        return null;
+    }
+
+    // Сохранение JSON в файл
     private static boolean save() {
         Gson gson = new Gson();
         String json = gson.toJson(taskList);
@@ -131,7 +109,7 @@ public class Json {
         FileOutputStream fos = null;
 
         try {
-            fos = ctx.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+            fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
             fos.write(json.getBytes());
             return true;
         } catch (IOException e) {
@@ -149,18 +127,16 @@ public class Json {
         return false;
     }
 
-    /**
-     * Загрузка данных из JSON.
-     * @return успешность выполнения
-     */
+    // Загрузка JSON из файла
     private static boolean load() {
         InputStreamReader isr = null;
         FileInputStream fis = null;
 
         try {
-            fis = ctx.openFileInput(FILE_NAME);
+            fis = context.openFileInput(FILENAME);
             isr = new InputStreamReader(fis);
             taskList = new Gson().fromJson(isr, TaskList.class);
+            return taskList != null;
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -180,14 +156,6 @@ public class Json {
             }
         }
 
-        return taskList != null;
-    }
-
-    public static boolean isUpdated() {
-        return updated;
-    }
-
-    public static boolean isLoaded() {
-        return loaded;
+        return false;
     }
 }

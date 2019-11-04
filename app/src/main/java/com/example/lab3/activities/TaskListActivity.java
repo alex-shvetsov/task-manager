@@ -9,12 +9,14 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.example.lab3.R;
-import com.example.lab3.json.Json;
-import com.example.lab3.task.Task;
+import com.example.lab3.data.json.Json;
+import com.example.lab3.fragments.DetailsFragment;
+import com.example.lab3.fragments.TaskListFragment;
+import com.example.lab3.fragments.ViewDetailsFragment;
+import com.example.lab3.interfaces.OnListViewItemSelected;
 
-import java.util.Date;
 
-public class TaskListActivity extends AppCompatActivity {
+public class TaskListActivity extends AppCompatActivity implements OnListViewItemSelected {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +25,6 @@ public class TaskListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_task_list);
 
         Json.init(this);
-        //Json.put(new Task("A", new Date(), null, false));
-        //Json.put(new Task("A", new Date(11111111L), null, true));
-        Json.update();
     }
 
     @Override
@@ -38,35 +37,32 @@ public class TaskListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.createMI:
-                Intent intent = new Intent(TaskListActivity.this, DetailsActivity.class);
-                intent.putExtra("creating", true);
-                startActivity(intent);
+                // создание новой задачи
+                passItem(-1);
                 return true;
+
             case R.id.sortByDateMI:
+                // сортировка по дате
                 Json.sortByDate();
                 Json.update();
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
                 return true;
-            case R.id.deleteDone:
-                //remove all done
-                Json.removeIfDone();
+
+            case R.id.removeDoneMI:
+                // удалить все выполненные
+                item.setChecked(Json.removeIfDone());
                 Json.update();
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
                 return true;
-            case R.id.exitMI:
-                finishAffinity();
-                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
-    private void sort(boolean sorted) {
-
+    @Override
+    public void passItem(int position) {
+        Intent intent = new Intent(this, ViewDetailsActivity.class);
+        intent.putExtra("position", position);
+        startActivity(intent);
     }
+
 }

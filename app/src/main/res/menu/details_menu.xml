@@ -3,10 +3,10 @@
     <item
         android:id="@+id/editMI"
         android:orderInCategory="1"
-        android:title="Edit"/>
+        android:title="Редактировать"/>
 
     <item
-        android:id="@+id/deleteMI"
+        android:id="@+id/removeMI"
         android:orderInCategory="2"
-        android:title="Delete"/>
+        android:title="Удалить"/>
 </menu>

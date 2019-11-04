@@ -1,10 +1,9 @@
-package com.example.lab3.json;
+package com.example.lab3.data.json;
 
-import com.example.lab3.task.Task;
+import com.example.lab3.data.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 
 class TaskList {
