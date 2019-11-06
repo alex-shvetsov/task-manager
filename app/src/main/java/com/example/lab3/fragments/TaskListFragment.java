@@ -37,7 +37,7 @@ public class TaskListFragment extends ListFragment {
         super.onActivityCreated(state);
 
         // cоздаем адаптер для ListView
-        setListAdapter(Data.createAdapter(getView().getContext(), (TaskListActivity)getActivity()));
+        setListAdapter(Data.createAdapter(getView().getContext()));
 
         if (getView() != null) {
             getListView().setOnItemClickListener((parent, view, position, id) -> {

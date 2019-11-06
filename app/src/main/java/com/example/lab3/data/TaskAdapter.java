@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.example.lab3.OnDataSorted;
 import com.example.lab3.R;
 
 import java.text.SimpleDateFormat;
@@ -21,7 +20,6 @@ public class TaskAdapter extends ArrayAdapter<Task>  {
 
     private Task[] data;
     private Filter lastFilter;
-    private OnDataSorted onDataSorted;
 
     private static class ViewHolder {
         TextView txtName;
@@ -29,9 +27,8 @@ public class TaskAdapter extends ArrayAdapter<Task>  {
         CheckBox chbDone;
     }
 
-    TaskAdapter(Task[] data, Context context, OnDataSorted onDataSorted) {
+    TaskAdapter(Task[] data, Context context) {
         super(context, R.layout.task_list_item, new ArrayList<>(Arrays.asList(data)));
-        this.onDataSorted = onDataSorted;
         this.data = data;
     }
 
@@ -70,11 +67,10 @@ public class TaskAdapter extends ArrayAdapter<Task>  {
 
     public void update() {
         filter();
-        onDataSorted.setSorted(false);
     }
 
     private void update(Task[] data) {
-        // собственно обновление данных и оповещение об изменении
+        // обновление данных и оповещение об изменении
         this.data = data;
 
         clear();
@@ -118,7 +114,6 @@ public class TaskAdapter extends ArrayAdapter<Task>  {
         Collections.sort(data, (task, t1)
                 -> Long.compare(task.getDate().getTime(), t1.getDate().getTime()));
         updateList(data);
-        onDataSorted.setSorted(true);
     }
 
     public enum Filter {
