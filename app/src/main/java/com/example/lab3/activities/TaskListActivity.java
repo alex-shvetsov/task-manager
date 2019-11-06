@@ -13,17 +13,16 @@ import android.widget.SpinnerAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.lab3.OnDataSorted;
 import com.example.lab3.OnListViewItemSelected;
 import com.example.lab3.R;
 import com.example.lab3.data.Data;
 import com.example.lab3.data.TaskAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class TaskListActivity extends AppCompatActivity implements OnListViewItemSelected, OnDataSorted {
+public class TaskListActivity extends AppCompatActivity implements OnListViewItemSelected {
 
     private boolean sorted;
-    private Menu menu;
+    private int spinnerPos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +43,8 @@ public class TaskListActivity extends AppCompatActivity implements OnListViewIte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.task_list_menu, menu);
-        this.menu = menu;
+
+        menu.findItem(R.id.sortByDateMI).setChecked(sorted);
 
         Spinner spinner = (Spinner) menu.findItem(R.id.spinner).getActionView();
         SpinnerAdapter spinnerAdapter = ArrayAdapter.createFromResource(
@@ -70,8 +70,10 @@ public class TaskListActivity extends AppCompatActivity implements OnListViewIte
                         break;
                 }
 
-                setSorted(false);
-                Data.getAdapter().update();
+                spinnerPos = position;
+                if (sorted) {
+                    Data.getAdapter().sortByDate();
+                }
             }
 
             @Override
@@ -93,8 +95,10 @@ public class TaskListActivity extends AppCompatActivity implements OnListViewIte
                 // сортировка по дате
                 if (!sorted) {
                     Data.getAdapter().sortByDate();
+                    sorted = true;
                 } else {
                     Data.getAdapter().update();
+                    sorted = false;
                 }
                 return true;
 
@@ -109,6 +113,24 @@ public class TaskListActivity extends AppCompatActivity implements OnListViewIte
     }
 
     @Override
+    public void onPostResume() {
+        super.onPostResume();
+        if (sorted) {
+            Data.getAdapter().sortByDate();
+        }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Spinner spinner = (Spinner)menu.findItem(R.id.spinner).getActionView();
+        spinner.setSelection(spinnerPos);
+
+        menu.findItem(R.id.sortByDateMI).setChecked(sorted);
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public void passItem(int position) {
         Intent intent = new Intent(this,
                 position < 0 ? DetailsActivity.class : ViewDetailsActivity.class);
@@ -118,22 +140,14 @@ public class TaskListActivity extends AppCompatActivity implements OnListViewIte
 
     @Override
     public void onSaveInstanceState(Bundle state) {
-        super.onSaveInstanceState(state);
         state.putBoolean("sorted", sorted);
+        state.putInt("spinnerPos", spinnerPos);
+        super.onSaveInstanceState(state);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle state) {
         this.sorted = state.getBoolean("sorted");
-    }
-
-    @Override
-    public void setSorted(boolean sorted) {
-        this.sorted = sorted;
-
-        if (menu != null) {
-            MenuItem sortMI = (MenuItem)menu.findItem(R.id.sortByDateMI);
-            sortMI.setChecked(sorted);
-        }
+        this.spinnerPos = state.getInt("spinnerPos");
     }
 }

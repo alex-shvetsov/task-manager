@@ -2,15 +2,12 @@ package com.example.lab3.data;
 
 import android.content.Context;
 
-import com.example.lab3.OnDataSorted;
 import com.google.gson.Gson;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Data {
     private static final String FILENAME = "data2.json";
@@ -141,10 +138,10 @@ public class Data {
         }
     }
 
-    public static TaskAdapter createAdapter(Context context, OnDataSorted onDataSorted) {
+    public static TaskAdapter createAdapter(Context context) {
         if (adapter != null)
             return adapter;
-        return adapter = new TaskAdapter(Data.get(), context, onDataSorted);
+        return adapter = new TaskAdapter(Data.get(), context);
     }
 
     public static TaskAdapter getAdapter() {
