@@ -8,8 +8,9 @@
 
     <fragment
         android:id="@+id/taskListFragment"
+        android:name="com.example.lab3.fragments.TaskListFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.example.lab3.fragments.TaskListFragment"/>
+        android:layout_height="match_parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

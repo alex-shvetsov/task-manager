@@ -2,7 +2,6 @@ package com.example.lab3.fragments;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +11,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.lab3.R;
 import com.example.lab3.data.Task;
-import com.example.lab3.data.json.Json;
+import com.example.lab3.data.Data;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,6 +57,15 @@ public class DetailsFragment extends Fragment {
             position = bundle.getInt("position");
         }
 
+        // заполняем поля данными в режиме редактирования
+        if (position > -1) {
+            Task task = Data.getAdapter().get(position);
+            nameField.setText(task.getName());
+            descField.setText(task.getDescription());
+            pickDateButton.setText(new SimpleDateFormat("dd/MM/yyyy").format(task.getDate()));
+            doneChBox.setChecked(task.isDone());
+        }
+
         // DatePicker
         pickDateButton.setOnClickListener(v -> {
             final Calendar cal = Calendar.getInstance();
@@ -78,12 +85,12 @@ public class DetailsFragment extends Fragment {
             dpd.show();
         });
 
-        // Кнопка сохранения
+        // rнопка сохранения
         saveButton.setOnClickListener(v -> {
             if (nameField.getText().toString().matches("")) {
                 AlertDialog.Builder adb = new AlertDialog.Builder(getContext());
                 adb.setMessage("Введите данные в поле названия задачи.");
-                adb.setNegativeButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
+                adb.setNeutralButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
                 adb.show();
                 nameField.requestFocus();
                 return;
@@ -92,38 +99,32 @@ public class DetailsFragment extends Fragment {
                 adb.setMessage("Подтвердите действие.");
                 adb.setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss());
                 adb.setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                    // position < 0 ? создание : редактирование
                     Date date;
                     try {
-                        date = new SimpleDateFormat().parse(pickDateButton.getText().toString());
+                        date = new SimpleDateFormat("dd/MM/yyyy").parse(pickDateButton.getText().toString());
                     } catch (ParseException e) {
+                        // возращаем текующую дату, если не удалось запарсить текст с кнопки
+                        // при создании на кнопке написан текст, т.е. если не выбрать дату, вернется текущая
                         date = new Date();
                     }
 
-                    Task task = position < 0 ? new Task() : Json.get(position);
+                    // position < 0 ? создание : редактирование
+                    Task task = position < 0 ? new Task() : Data.getAdapter().get(position);
                     task.setName(nameField.getText().toString());
                     task.setDescription(descField.getText().toString());
                     task.setDate(date);
                     task.setDone(doneChBox.isChecked());
 
-                    if (position < 0) {
-                        Json.add(task);
-                    }
-                    Json.update();
+                    if (position < 0)
+                        Data.add(task, false);
+                    Data.update();
 
+                    // закрываем активити после сохранения
                     getActivity().onBackPressed();
                 });
                 adb.show();
             }
         });
-
-        if (position > -1) {
-            Task task = Json.get(position);
-            nameField.setText(task.getName());
-            descField.setText(task.getDescription());
-            pickDateButton.setText(new SimpleDateFormat("dd/MM/yyyy").format(task.getDate()));
-            doneChBox.setChecked(task.isDone());
-        }
     }
 
     @Override

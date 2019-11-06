@@ -1,8 +1,8 @@
 package com.example.lab3.activities;
 
+import com.example.lab3.OnTaskDone;
 import com.example.lab3.R;
-import com.example.lab3.data.json.Json;
-import com.example.lab3.fragments.DetailsFragment;
+import com.example.lab3.data.Data;
 import com.example.lab3.fragments.ViewDetailsFragment;
 
 import android.content.Intent;
@@ -13,10 +13,9 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ViewDetailsActivity extends AppCompatActivity {
+public class ViewDetailsActivity extends AppCompatActivity implements OnTaskDone {
 
     private int position;
-
     private Menu menu;
 
     @Override
@@ -26,6 +25,8 @@ public class ViewDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_details);
 
         this.position = getIntent().getIntExtra("position", -1);
+
+        setTitle(position < 0 ? "lol" : Data.getAdapter().get(position).getName());
 
         ViewDetailsFragment vf = (ViewDetailsFragment)
                 getSupportFragmentManager().findFragmentById(R.id.viewDetailsFragment);
@@ -40,12 +41,14 @@ public class ViewDetailsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.details_menu, menu);
+        this.menu = menu;
 
         MenuItem editItem = (MenuItem) menu.findItem(R.id.editMI);
         MenuItem removeItem = (MenuItem)menu.findItem(R.id.removeMI);
 
-        if (!Json.get(position).isDone()) {
+        if (!Data.getAdapter().get(position).isDone()) {
             editItem.setOnMenuItemClickListener(item -> {
+                // переходим к редактированию
                 Intent intent = new Intent(this, DetailsActivity.class);
                 intent.putExtra("position", position);
                 startActivity(intent);
@@ -56,9 +59,8 @@ public class ViewDetailsActivity extends AppCompatActivity {
         }
 
         removeItem.setOnMenuItemClickListener(item -> {
-            Json.remove(Json.get(position));
-            Json.update();
-            finish();
+            Data.remove(Data.getAdapter().get(position), true);
+            finish();   // выходим из активити после удаления
             return true;
         });
 
@@ -74,5 +76,14 @@ public class ViewDetailsActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle bundle) {
         bundle.putInt("position", position);
         super.onSaveInstanceState(bundle);
+    }
+
+    @Override
+    public void blockEdit(boolean isDone) {
+        if (menu != null) {
+            // блокируем кнопку редактирования, если задача выполнена
+            MenuItem editItem = (MenuItem) menu.findItem(R.id.editMI);
+            editItem.setEnabled(!isDone);
+        }
     }
 }

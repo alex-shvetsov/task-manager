@@ -1,6 +1,5 @@
 package com.example.lab3.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,7 +8,7 @@ import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lab3.R;
-import com.example.lab3.data.json.Json;
+import com.example.lab3.data.Data;
 import com.example.lab3.fragments.DetailsFragment;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -23,6 +22,10 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         this.position = getIntent().getIntExtra("position", -1);
+
+        // создание -> 'Новая задача'
+        // редактирование -> название задачи
+        setTitle(position < 0 ? "Новая задача" : Data.getAdapter().get(position).getName());
 
         DetailsFragment df = (DetailsFragment)
                 getSupportFragmentManager().findFragmentById(R.id.detailsFragment);
@@ -43,11 +46,18 @@ public class DetailsActivity extends AppCompatActivity {
             MenuItem editItem = (MenuItem) menu.findItem(R.id.editMI);
             MenuItem removeItem = (MenuItem)menu.findItem(R.id.removeMI);
 
+            // переход к редактированию в режиме создания/редактирования запрещено
             editItem.setEnabled(false);
+            // удаление в режиме создания запрещено
+            if (position == -1) {
+                removeItem.setEnabled(false);
+                return true;
+            }
+
+            // удаление в режиме редактирования разрешено
             removeItem.setOnMenuItemClickListener(item -> {
-                Json.remove(Json.get(position));
-                Json.update();
-                finish();
+                Data.remove(Data.getAdapter().get(position), true);
+                finish();   // выходим из активити после удаления
                 return true;
             });
         }

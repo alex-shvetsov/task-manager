@@ -9,20 +9,21 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.ListFragment;
 
+import com.example.lab3.OnListViewItemSelected;
 import com.example.lab3.R;
-import com.example.lab3.data.json.Json;
+import com.example.lab3.activities.TaskListActivity;
+import com.example.lab3.data.Data;
 import com.example.lab3.data.TaskAdapter;
 
 public class TaskListFragment extends ListFragment {
 
-    private TaskAdapter adapter;
-    private OnListViewItemSelected callback;
+    private OnListViewItemSelected onListViewItemSelected;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context != null) {
-            this.callback = (OnListViewItemSelected)context;
+            this.onListViewItemSelected = (OnListViewItemSelected)context;
         }
     }
 
@@ -35,11 +36,14 @@ public class TaskListFragment extends ListFragment {
     public void onActivityCreated(Bundle state) {
         super.onActivityCreated(state);
 
+        // cоздаем адаптер для ListView
+        setListAdapter(Data.createAdapter(getView().getContext(), (TaskListActivity)getActivity()));
+
         if (getView() != null) {
-            // передаем позицию задачи при выборе элемента
             getListView().setOnItemClickListener((parent, view, position, id) -> {
-                if (callback != null) {
-                    callback.passItem(position);
+                if (onListViewItemSelected != null) {
+                    // передаем позицию задачи при выборе элемента
+                    onListViewItemSelected.passItem(position);
                 }
             });
 
@@ -48,8 +52,8 @@ public class TaskListFragment extends ListFragment {
                 AlertDialog.Builder adb = new AlertDialog.Builder(getContext());
                 adb.setMessage("Вы действительно хотите удалить задачу?");
                 adb.setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                    Json.remove(Json.get(position));
-                    Json.update();
+                    Data.remove(Data.getAdapter().get(position), true);
+                    Data.getAdapter().update();
                 });
                 adb.setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss());
                 adb.show();
@@ -61,8 +65,7 @@ public class TaskListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        // обновляем список
-        adapter = new TaskAdapter(Json.get(), getView().getContext());
-        setListAdapter(adapter);
+        // обновляем и отображаем данные по возвращении к списку
+        Data.getAdapter().update();
     }
 }
