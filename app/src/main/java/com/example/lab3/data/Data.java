@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Data {
-    private static final String FILENAME = "data.json";
+    private static final String FILENAME = "data2.json";
     private static Context context;
     private static TaskList taskList;       // Хранит ВСЕ данные
     private static TaskAdapter adapter;     // Адаптер + хранит данные, представленные в ListView

@@ -18,6 +18,7 @@ import com.example.lab3.OnListViewItemSelected;
 import com.example.lab3.R;
 import com.example.lab3.data.Data;
 import com.example.lab3.data.TaskAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class TaskListActivity extends AppCompatActivity implements OnListViewItemSelected, OnDataSorted {
 
@@ -30,6 +31,12 @@ public class TaskListActivity extends AppCompatActivity implements OnListViewIte
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_task_list);
         setTitle("Моя Прога 1.0");
+
+        FloatingActionButton button =findViewById(R.id.fab);
+
+        button.setOnClickListener(view -> {
+            passItem(-1);
+        });
 
         Data.init(this);
     }
